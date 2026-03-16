@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { skills, repos, donations, users } from "@skillshub/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
 import Link from "next/link";
-import { Key, Package, DollarSign, LogOut, Wallet } from "lucide-react";
+import { Package, DollarSign, LogOut, Wallet, Heart, Plus, ArrowRight } from "lucide-react";
 
 export default async function DashboardPage() {
   const user = await getUser();
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
   const db = getDb();
 
-  const [userDataArr, skillCount, donationStats, recentSkills] = await Promise.all([
+  const [userDataArr, repoCount, skillCount, donationStats] = await Promise.all([
     db
       .select({
         bscAddress: users.bscAddress,
@@ -21,6 +21,10 @@ export default async function DashboardPage() {
       .from(users)
       .where(eq(users.id, user.userId))
       .limit(1),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(repos)
+      .where(eq(repos.ownerId, user.userId)),
     db
       .select({ count: sql<number>`count(*)::int` })
       .from(skills)
@@ -32,191 +36,158 @@ export default async function DashboardPage() {
       })
       .from(donations)
       .where(eq(donations.toUserId, user.userId)),
-    db
-      .select({
-        id: skills.id,
-        slug: skills.slug,
-        name: skills.name,
-        repoId: skills.repoId,
-        repoGithubOwner: repos.githubOwner,
-        repoGithubRepoName: repos.githubRepoName,
-        repoStarCount: repos.starCount,
-        repoDownloadCount: repos.downloadCount,
-      })
-      .from(skills)
-      .innerJoin(repos, eq(skills.repoId, repos.id))
-      .where(eq(skills.ownerId, user.userId))
-      .orderBy(desc(skills.createdAt))
-      .limit(5),
   ]);
 
   const userData = userDataArr[0];
   const hasBscAddress = !!userData?.bscAddress;
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-4xl px-4 py-8 animate-fade-in">
+      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">
-            Welcome, {user.displayName ?? user.username}
+          <h1 className="font-mono text-2xl font-bold text-neutral-100">
+            <span className="text-neon-cyan/40">&gt;</span> {user.displayName ?? user.username}
           </h1>
-          <p className="text-neutral-400">@{user.username}</p>
+          <p className="font-mono text-xs text-neutral-600">@{user.username}</p>
         </div>
         <form action="/api/auth/logout" method="POST">
           <button
             type="submit"
-            className="flex items-center gap-2 rounded-md border border-neutral-800 px-4 py-2 text-sm text-neutral-400 hover:bg-neutral-900"
+            className="flex items-center gap-2 rounded border border-neutral-800/40 px-3 py-2 font-mono text-xs text-neutral-600 hover:text-red-400 hover:border-red-500/30 transition-colors"
           >
-            <LogOut className="h-4 w-4" />
-            Logout
+            <LogOut className="h-3.5 w-3.5" />
+            logout
           </button>
         </form>
       </div>
 
-      <div className="mb-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-lg border border-neutral-800 p-6">
-          <div className="flex items-center gap-3">
-            <Package className="h-5 w-5 text-blue-600" />
-            <div>
-              <p className="text-2xl font-bold">{skillCount[0]?.count ?? 0}</p>
-              <p className="text-sm text-neutral-400">Published Skills</p>
-            </div>
-          </div>
+      {/* Stats */}
+      <div className="mb-8 grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="rounded border border-neutral-800/50 bg-neutral-900/20 p-4">
+          <div className="font-mono text-2xl font-bold text-neon-cyan">{repoCount[0]?.count ?? 0}</div>
+          <div className="font-mono text-[10px] text-neutral-600 uppercase tracking-wider mt-0.5">repos</div>
         </div>
-        <div className="rounded-lg border border-neutral-800 p-6">
-          <div className="flex items-center gap-3">
-            <DollarSign className="h-5 w-5 text-green-600" />
-            <div>
-              <p className="text-2xl font-bold">
-                ${userData?.totalDonationsReceived ?? "0"}
-              </p>
-              <p className="text-sm text-neutral-400">Total Donations</p>
-            </div>
-          </div>
+        <div className="rounded border border-neutral-800/50 bg-neutral-900/20 p-4">
+          <div className="font-mono text-2xl font-bold text-neon-lime">{skillCount[0]?.count ?? 0}</div>
+          <div className="font-mono text-[10px] text-neutral-600 uppercase tracking-wider mt-0.5">skills</div>
         </div>
-        <div className="rounded-lg border border-neutral-800 p-6">
-          <div className="flex items-center gap-3">
-            <Key className="h-5 w-5 text-purple-600" />
-            <div>
-              <p className="text-2xl font-bold">
-                {donationStats[0]?.count ?? 0}
-              </p>
-              <p className="text-sm text-neutral-400">Donations Received</p>
-            </div>
-          </div>
+        <div className="rounded border border-neutral-800/50 bg-neutral-900/20 p-4">
+          <div className="font-mono text-2xl font-bold text-neon-yellow">${userData?.totalDonationsReceived ?? "0"}</div>
+          <div className="font-mono text-[10px] text-neutral-600 uppercase tracking-wider mt-0.5">earned</div>
         </div>
-        <div className="rounded-lg border border-neutral-800 p-6">
-          <div className="flex items-center gap-3">
-            <Wallet className={`h-5 w-5 ${hasBscAddress ? "text-cyan-500" : "text-yellow-600"}`} />
-            <div>
-              <p className="text-2xl font-bold">
-                {hasBscAddress ? "✓" : "—"}
-              </p>
-              <p className="text-sm text-neutral-400">
-                {hasBscAddress ? (
-                  "Wallet Set Up"
-                ) : (
-                  <Link href="/dashboard/wallet" className="text-cyan-500 hover:underline">
-                    Set Up Wallet →
-                  </Link>
-                )}
-              </p>
-            </div>
-          </div>
+        <div className="rounded border border-neutral-800/50 bg-neutral-900/20 p-4">
+          <div className="font-mono text-2xl font-bold text-neon-magenta">{hasBscAddress ? "✓" : "—"}</div>
+          <div className="font-mono text-[10px] text-neutral-600 uppercase tracking-wider mt-0.5">wallet</div>
         </div>
       </div>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        <div>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Recent Skills</h2>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/skills/import"
-                className="text-sm text-neon-cyan hover:underline font-mono"
-              >
-                ⇣ import
-              </Link>
-              <Link
-                href="/skills/publish"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                + publish
-              </Link>
+      {/* Navigation — ordered: Repos, Publish, Wallet, Donations */}
+      <div className="space-y-3">
+        {/* 1. Repos & Skills */}
+        <Link
+          href="/dashboard/skills"
+          className="group flex items-center justify-between rounded border border-neutral-800/50 bg-neutral-900/10 p-5 hover:border-neon-cyan/30 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <Package className="h-5 w-5 text-neon-cyan/60" />
+            <div>
+              <p className="font-mono text-sm font-semibold text-neutral-200 group-hover:text-neon-cyan transition-colors">
+                repos & skills
+              </p>
+              <p className="font-mono text-[10px] text-neutral-600">
+                manage your repos, add/edit/delete skills
+              </p>
             </div>
           </div>
-          {recentSkills.length === 0 ? (
-            <p className="text-sm text-neutral-400">
-              No skills published yet.
-            </p>
-          ) : (
-            <div className="space-y-3">
-              {recentSkills.map((s) => (
-                <Link
-                  key={s.id}
-                  href={s.repoGithubOwner && s.repoGithubRepoName ? `/${s.repoGithubOwner}/${s.repoGithubRepoName}/${s.slug}` : `/skills/${user.username}/${s.slug}`}
-                  className="block rounded-lg border border-neutral-800 p-4 hover:bg-neutral-900"
-                >
-                  <p className="font-medium">{s.name}</p>
-                  <p className="text-sm text-neutral-400">
-                    {s.repoStarCount} stars · {s.repoDownloadCount} downloads
-                  </p>
-                </Link>
-              ))}
+          <ArrowRight className="h-4 w-4 text-neutral-700 group-hover:text-neon-cyan transition-colors" />
+        </Link>
+
+        {/* 2. Publish / Import Skills */}
+        <div className="grid grid-cols-2 gap-3">
+          <Link
+            href="/skills/import"
+            className="group flex items-center gap-3 rounded border border-neon-cyan/20 bg-neon-cyan/5 p-5 hover:bg-neon-cyan/10 transition-all"
+          >
+            <span className="font-mono text-lg">⇣</span>
+            <div>
+              <p className="font-mono text-sm font-semibold text-neon-cyan">
+                import from github
+              </p>
+              <p className="font-mono text-[10px] text-neutral-600">
+                scan & import SKILL.md files
+              </p>
             </div>
-          )}
+          </Link>
+          <Link
+            href="/skills/publish"
+            className="group flex items-center gap-3 rounded border border-neutral-800/50 bg-neutral-900/10 p-5 hover:border-neon-magenta/30 transition-all"
+          >
+            <Plus className="h-5 w-5 text-neon-magenta/60" />
+            <div>
+              <p className="font-mono text-sm font-semibold text-neutral-200 group-hover:text-neon-magenta transition-colors">
+                publish skill
+              </p>
+              <p className="font-mono text-[10px] text-neutral-600">
+                create a skill manually
+              </p>
+            </div>
+          </Link>
         </div>
 
-        <div>
-          <h2 className="mb-4 text-lg font-semibold">Quick Links</h2>
-          <div className="space-y-2">
-            <Link
-              href="/skills/import"
-              className="block rounded-lg border border-neon-cyan/20 bg-neon-cyan/5 p-4 hover:bg-neon-cyan/10 transition-colors"
-            >
-              <p className="font-medium font-mono text-neon-cyan">⇣ Import from GitHub</p>
-              <p className="text-sm text-neutral-400">
-                Scan a repo and import skills with one click
+        {/* 3. Wallet Setup */}
+        <Link
+          href="/dashboard/wallet"
+          className="group flex items-center justify-between rounded border border-neutral-800/50 bg-neutral-900/10 p-5 hover:border-neon-yellow/30 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <Wallet className={`h-5 w-5 ${hasBscAddress ? "text-neon-lime/60" : "text-neon-yellow/60"}`} />
+            <div>
+              <p className="font-mono text-sm font-semibold text-neutral-200 group-hover:text-neon-yellow transition-colors">
+                wallet setup
               </p>
-            </Link>
-            <Link
-              href="/dashboard/skills"
-              className="block rounded-lg border border-neutral-800 p-4 hover:bg-neutral-900"
-            >
-              <p className="font-medium">My Skills</p>
-              <p className="text-sm text-neutral-400">
-                Manage your published skills
+              <p className="font-mono text-[10px] text-neutral-600">
+                {hasBscAddress
+                  ? "BSC receiving address configured ✓"
+                  : "set up your BSC address to receive donations"}
               </p>
-            </Link>
-            <Link
-              href="/dashboard/wallet"
-              className="block rounded-lg border border-neutral-800 p-4 hover:bg-neutral-900"
-            >
-              <p className="font-medium">Wallet Setup</p>
-              <p className="text-sm text-neutral-400">
-                Configure your BSC receiving address
-              </p>
-            </Link>
-            <Link
-              href="/dashboard/earnings"
-              className="block rounded-lg border border-neutral-800 p-4 hover:bg-neutral-900"
-            >
-              <p className="font-medium">Earnings</p>
-              <p className="text-sm text-neutral-400">
-                View donation history
-              </p>
-            </Link>
-            <Link
-              href="/dashboard/api-keys"
-              className="block rounded-lg border border-neutral-800 p-4 hover:bg-neutral-900"
-            >
-              <p className="font-medium">API Keys</p>
-              <p className="text-sm text-neutral-400">
-                Manage your API access
-              </p>
-            </Link>
+            </div>
           </div>
-        </div>
+          <ArrowRight className="h-4 w-4 text-neutral-700 group-hover:text-neon-yellow transition-colors" />
+        </Link>
+
+        {/* 4. Donations Received */}
+        <Link
+          href="/dashboard/earnings"
+          className="group flex items-center justify-between rounded border border-neutral-800/50 bg-neutral-900/10 p-5 hover:border-neon-lime/30 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <DollarSign className="h-5 w-5 text-neon-lime/60" />
+            <div>
+              <p className="font-mono text-sm font-semibold text-neutral-200 group-hover:text-neon-lime transition-colors">
+                donations received
+              </p>
+              <p className="font-mono text-[10px] text-neutral-600">
+                {donationStats[0]?.count ?? 0} donations · ${userData?.totalDonationsReceived ?? "0"} total
+              </p>
+            </div>
+          </div>
+          <ArrowRight className="h-4 w-4 text-neutral-700 group-hover:text-neon-lime transition-colors" />
+        </Link>
+
+        {/* 5. API Keys (smaller, secondary) */}
+        <Link
+          href="/dashboard/api-keys"
+          className="group flex items-center justify-between rounded border border-neutral-800/30 bg-neutral-900/5 p-4 hover:border-neutral-700/50 transition-all"
+        >
+          <div className="flex items-center gap-3">
+            <span className="font-mono text-xs text-neutral-700">🔑</span>
+            <p className="font-mono text-xs text-neutral-500 group-hover:text-neutral-300 transition-colors">
+              api keys
+            </p>
+          </div>
+          <ArrowRight className="h-3.5 w-3.5 text-neutral-800 group-hover:text-neutral-500 transition-colors" />
+        </Link>
       </div>
     </div>
   );
