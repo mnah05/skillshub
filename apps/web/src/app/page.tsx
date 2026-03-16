@@ -213,6 +213,44 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── Available for these agents ──────────── */}
+      <section className="mb-16 overflow-hidden">
+        <p className="mb-5 text-center font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-600">
+          available for these agents
+        </p>
+        <div className="relative">
+          {/* Fade edges */}
+          <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[#050505] to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[#050505] to-transparent" />
+          {/* Scrolling track */}
+          <div className="flex animate-scroll-x gap-8">
+            {[...Array(2)].map((_, setIdx) => (
+              <div key={setIdx} className="flex shrink-0 gap-8">
+                {[
+                  "AMP",
+                  "Antigravity",
+                  "Claude Code",
+                  "ClawdBot",
+                  "Cline",
+                  "Codex",
+                  "Cursor",
+                  "Droid",
+                  "Gemini",
+                ].map((agent) => (
+                  <div
+                    key={`${setIdx}-${agent}`}
+                    className="flex shrink-0 items-center gap-2 rounded border border-neutral-800/30 bg-neutral-900/20 px-4 py-2.5 font-mono text-sm text-neutral-400 transition-colors hover:border-neon-cyan/20 hover:text-neon-cyan/80"
+                  >
+                    <span className="text-neon-cyan/30">◆</span>
+                    {agent}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ── Stats ─────────────────────────────── */}
       <section className="mb-16 grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
