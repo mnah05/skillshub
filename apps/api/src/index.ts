@@ -32,7 +32,7 @@ const AGENT_GUIDE = {
   name: "SkillsHub API",
   version: "1.0.0",
   description: "The open marketplace for AI agent skills. Search, fetch, and publish reusable skills.",
-  base_url: process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub-rena.vercel.app",
+  base_url: process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub.wtf",
   quick_start: {
     step_1: {
       action: "Search for a skill you need",
@@ -131,7 +131,7 @@ const AGENT_GUIDE = {
 };
 
 app.get("/", (c) => {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub-rena.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub.wtf";
   const guide = JSON.parse(JSON.stringify(AGENT_GUIDE));
   // Replace BASE_URL placeholders in examples
   for (const key of Object.keys(guide.examples)) {
@@ -142,7 +142,7 @@ app.get("/", (c) => {
 });
 
 app.get("/api/v1", (c) => {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub-rena.vercel.app";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub.wtf";
   const guide = JSON.parse(JSON.stringify(AGENT_GUIDE));
   for (const key of Object.keys(guide.examples)) {
     guide.examples[key] = guide.examples[key].replace(/BASE_URL/g, baseUrl);

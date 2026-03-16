@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub-rena.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub.wtf";
 
 export async function GET() {
   return NextResponse.json({

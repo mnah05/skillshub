@@ -3,7 +3,7 @@
   "description": "The open marketplace for AI agent skills",
   "private": true,
   "license": "MIT",
-  "homepage": "https://skillshub-rena.vercel.app",
+  "homepage": "https://skillshub.wtf",
   "repository": {
     "type": "git",
     "url": "https://github.com/ComeOnOliver/skillshub"

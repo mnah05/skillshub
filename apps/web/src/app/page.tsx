@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { ArrowRight, Zap, Shield, Coins } from "lucide-react";
+import { ArrowRight, Zap, Shield, Coins, Star, Download, Package } from "lucide-react";
 import { getDb } from "@/lib/db";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { eq, desc, sql } from "drizzle-orm";
-import { SkillCard } from "@/components/skill-card";
+import { getMultiRepoStars } from "@/lib/ungh";
 
 async function getStats() {
   const db = getDb();
@@ -33,52 +33,109 @@ async function getStats() {
   };
 }
 
-async function TopSkills() {
+// Hardcoded featured repos for when DB has no stars
+const FEATURED_REPOS = [
+  { owner: "openclaw", repo: "openclaw", description: "Your own personal AI assistant. Any OS. Any Platform.", skills: 53 },
+  { owner: "anthropics", repo: "skills", description: "Public repository for Agent Skills by Anthropic.", skills: 17 },
+  { owner: "obra", repo: "superpowers", description: "AI agent superpowers — coding, research, and more.", skills: 14 },
+  { owner: "affaan-m", repo: "everything-claude-code", description: "Comprehensive Claude Code skills collection.", skills: 40 },
+  { owner: "vercel-labs", repo: "agent-skills", description: "Agent skills by Vercel — React, deployment, web design.", skills: 5 },
+  { owner: "kepano", repo: "obsidian-skills", description: "Obsidian-focused skills by Steph Ango.", skills: 5 },
+];
+
+function formatCount(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
+
+async function TopRepos() {
   const db = getDb();
 
   const data = await db
     .select({
-      id: skills.id,
-      slug: skills.slug,
-      name: skills.name,
-      description: skills.description,
-      tags: skills.tags,
-      repo: {
-        starCount: repos.starCount,
-        downloadCount: repos.downloadCount,
-        githubOwner: repos.githubOwner,
-        githubRepoName: repos.githubRepoName,
-      },
-      owner: {
-        id: users.id,
-        username: users.username,
-        displayName: users.displayName,
-        avatarUrl: users.avatarUrl,
-      },
+      id: repos.id,
+      name: repos.name,
+      description: repos.description,
+      githubOwner: repos.githubOwner,
+      githubRepoName: repos.githubRepoName,
+      starCount: repos.starCount,
+      downloadCount: repos.downloadCount,
+      skillCount: sql<number>`(SELECT count(*) FROM skills WHERE skills.repo_id = repos.id)::int`,
+      ownerAvatar: users.avatarUrl,
+      ownerUsername: users.username,
+      ownerVerified: users.isVerified,
     })
-    .from(skills)
-    .innerJoin(repos, eq(skills.repoId, repos.id))
-    .innerJoin(users, eq(skills.ownerId, users.id))
-    .where(eq(skills.isPublished, true))
+    .from(repos)
+    .innerJoin(users, eq(repos.ownerId, users.id))
     .orderBy(desc(repos.starCount))
     .limit(6);
 
+  // Fetch live GitHub stars
+  const repoKeys = (data.length > 0 ? data : FEATURED_REPOS).filter(r => r.githubOwner && r.githubRepoName).map(r => ({
+    owner: r.githubOwner!,
+    repo: r.githubRepoName!,
+  }));
+  const liveStars = await getMultiRepoStars(repoKeys);
+
   if (data.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="font-mono text-sm text-neutral-600">
-          <span className="text-neon-cyan/40">$</span> ls skills/<br />
-          <span className="text-neutral-500 mt-1 block">// no skills published yet — be the first</span>
-        </p>
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+        {FEATURED_REPOS.map((repo) => {
+          const ghStars = liveStars.get(`${repo.owner}/${repo.repo}`) ?? 0;
+          return (
+            <Link
+              key={`${repo.owner}/${repo.repo}`}
+              href={`/${repo.owner}/${repo.repo}`}
+              className="group block rounded border border-neutral-800/50 bg-neutral-900/20 p-4 transition-all hover:border-neon-cyan/30 hover:bg-neutral-900/40 glow-box"
+            >
+              <div className="flex items-center gap-2.5 mb-2">
+                <img src={`https://github.com/${repo.owner}.png`} alt={repo.owner} className="h-6 w-6 rounded-full ring-1 ring-neutral-800" />
+                <h3 className="font-mono text-sm font-medium text-neutral-200 group-hover:text-neon-cyan transition-colors truncate">
+                  {repo.owner}<span className="text-neutral-600">/</span>{repo.repo}
+                </h3>
+              </div>
+              <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed mb-3">{repo.description}</p>
+              <div className="flex items-center gap-3 font-mono text-[10px] text-neutral-600">
+                <span className="flex items-center gap-1"><Star className="h-3 w-3 text-neon-yellow/60" />{formatCount(ghStars)}</span>
+                <span className="flex items-center gap-1"><Package className="h-3 w-3 text-neon-cyan/60" />{repo.skills} skills</span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     );
   }
 
   return (
     <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
-      {data.map((skill) => (
-        <SkillCard key={skill.id} {...skill} />
-      ))}
+      {data.map((repo) => {
+        const ghStars = liveStars.get(`${repo.githubOwner}/${repo.githubRepoName}`) ?? 0;
+        return (
+          <Link
+            key={repo.id}
+            href={`/${repo.githubOwner}/${repo.githubRepoName}`}
+            className="group block rounded border border-neutral-800/50 bg-neutral-900/20 p-4 transition-all hover:border-neon-cyan/30 hover:bg-neutral-900/40 glow-box"
+          >
+            <div className="flex items-center gap-2.5 mb-2">
+              {repo.ownerAvatar && (
+                <img src={repo.ownerAvatar} alt={repo.ownerUsername} className="h-6 w-6 rounded-full ring-1 ring-neutral-800" />
+              )}
+              <h3 className="font-mono text-sm font-medium text-neutral-200 group-hover:text-neon-cyan transition-colors truncate">
+                {repo.githubOwner ?? repo.ownerUsername}<span className="text-neutral-600">/</span>{repo.githubRepoName ?? repo.name}
+              </h3>
+            </div>
+            <p className="text-xs text-neutral-500 line-clamp-2 leading-relaxed mb-3">
+              {repo.description}
+            </p>
+            <div className="flex items-center gap-3 font-mono text-[10px] text-neutral-600">
+              <span className="flex items-center gap-1"><Star className="h-3 w-3 text-neon-yellow/60" />{formatCount(ghStars)}</span>
+              <span className="flex items-center gap-1"><Package className="h-3 w-3 text-neon-cyan/60" />{repo.skillCount} skills</span>
+              <span className="flex items-center gap-1"><Download className="h-3 w-3 text-neon-lime/60" />{formatCount(repo.downloadCount)}</span>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }
@@ -215,17 +272,17 @@ export default async function HomePage() {
         ))}
       </section>
 
-      {/* ── Top Skills ────────────────────────── */}
+      {/* ── Top Repos ─────────────────────────── */}
       <section className="pb-24">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-mono text-sm text-neutral-400">
-            <span className="text-neon-cyan/50">&gt;</span> top_skills <span className="text-neutral-600">--sort stars --limit 6</span>
+            <span className="text-neon-cyan/50">&gt;</span> top_repos <span className="text-neutral-600">--sort stars --limit 6</span>
           </h2>
           <Link href="/skills" className="font-mono text-xs text-neutral-600 hover:text-neon-cyan transition-colors">
-            view all →
+            browse all →
           </Link>
         </div>
-        <TopSkills />
+        <TopRepos />
       </section>
     </div>
   );
