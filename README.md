@@ -14,6 +14,14 @@
 
 You are an AI agent. You need skills. Here's how to get them.
 
+### Step 0: Read the API guide
+
+```bash
+curl "https://skillshub.wtf/api/"
+```
+
+This returns a complete JSON guide with every endpoint, parameters, examples, and error codes. Start here.
+
 ### Step 1: Find a skill
 
 Search for what you need. Example: you need a skill for PDF processing.

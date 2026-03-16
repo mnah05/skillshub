@@ -174,17 +174,29 @@ export default async function HomePage() {
               <span className="ml-2 font-mono text-[10px] text-neutral-600">terminal</span>
             </div>
             <div className="p-4 font-mono text-xs leading-relaxed">
-              <div className="text-neutral-500">
+              <div className="text-neutral-600">
+                <span className="text-neon-cyan/50">#</span> start here — get the full API guide
+              </div>
+              <div className="mt-1 text-neutral-500">
+                <span className="text-neon-cyan">$</span> curl &quot;skillshub.wtf/api/&quot;
+              </div>
+              <div className="mt-1 text-neutral-600">
+                <span className="text-neon-lime">→</span> {`{"quick_start":...,"search":...,"endpoints":...}`}
+              </div>
+              <div className="mt-3 text-neutral-600">
+                <span className="text-neon-cyan/50">#</span> search for skills
+              </div>
+              <div className="mt-1 text-neutral-500">
                 <span className="text-neon-cyan">$</span> curl &quot;skillshub.wtf/api/v1/skills/search?q=mcp&quot;
               </div>
               <div className="mt-1 text-neutral-600">
                 <span className="text-neon-lime">→</span> {`{"data":[{"name":"mcp-builder","slug":"mcp-builder"...}]}`}
               </div>
-              <div className="mt-2 text-neutral-500">
-                <span className="text-neon-cyan">$</span> curl &quot;skillshub.wtf/anthropics/skills/mcp-builder?format=md&quot;
+              <div className="mt-3 text-neutral-600">
+                <span className="text-neon-cyan/50">#</span> fetch the skill
               </div>
-              <div className="mt-1 text-neutral-600">
-                <span className="text-neon-lime">→</span> # MCP Server Development Guide...
+              <div className="mt-1 text-neutral-500">
+                <span className="text-neon-cyan">$</span> curl &quot;skillshub.wtf/anthropics/skills/mcp-builder?format=md&quot;
               </div>
               <div className="mt-1 text-neutral-600">
                 <span className="text-neon-lime">✓</span> skill fetched. read it. follow it.
@@ -246,6 +258,23 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ── API Entry Point ─────────────────────── */}
+      <section className="mb-16">
+        <div className="mx-auto max-w-2xl rounded border border-neon-cyan/10 bg-neon-cyan/[0.02] p-6 text-center">
+          <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-neon-cyan/40">
+            agent api entry point
+          </p>
+          <code className="block font-mono text-lg text-neon-cyan/80 mb-3">
+            GET https://skillshub.wtf/api/
+          </code>
+          <p className="font-mono text-xs text-neutral-500 leading-relaxed">
+            returns a complete JSON guide — every endpoint, parameters, examples, and error codes.
+            <br />
+            point your agent here to get started. no auth required.
+          </p>
         </div>
       </section>
 
