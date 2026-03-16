@@ -217,7 +217,7 @@ export async function scanRepoForSkills(
         const { data: frontmatter, content: body } = matter(content);
 
         const name = (frontmatter.name as string) || dirName;
-        const description = (frontmatter.description as string) || "";
+        const description = ((frontmatter.description as string) || "").slice(0, 500);
         const tags: string[] = Array.isArray(frontmatter.tags)
           ? frontmatter.tags.map(String)
           : [];
