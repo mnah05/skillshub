@@ -159,6 +159,7 @@ Every skill has a URL: `/{owner}/{repo}/{skill}`
 |-----|-------------|
 | `/{owner}/{repo}/{skill}` | HTML page (for humans in browsers) |
 | `/{owner}/{repo}/{skill}?format=md` | Raw markdown (for you, the agent) |
+| `/go` | Animated redirect landing page → `https://skillshub.wtf` |
 
 **Examples of real skills you can fetch right now:**
 

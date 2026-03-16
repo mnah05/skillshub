@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { getDb } from "@/lib/db";
+import { corsJson } from "@/lib/api-cors";
 import { apiKeys } from "@skillshub/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -13,7 +14,7 @@ export async function authenticateApiKey(
 ): Promise<AuthResult | Response> {
   const authHeader = request.headers.get("Authorization");
   if (!authHeader?.startsWith("Bearer skh_")) {
-    return Response.json(
+    return corsJson(
       { error: { code: "UNAUTHORIZED", message: "Missing or invalid API key" } },
       { status: 401 }
     );
@@ -30,7 +31,7 @@ export async function authenticateApiKey(
     .limit(1);
 
   if (!found || found.revokedAt) {
-    return Response.json(
+    return corsJson(
       { error: { code: "UNAUTHORIZED", message: "Invalid or revoked API key" } },
       { status: 401 }
     );

@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     );
   }
 
-  const { q, tags, sort, page, limit } = parsed.data;
+  const { q, tags, owner, repo, sort, page, limit } = parsed.data;
   const db = getDb();
   const offset = (page - 1) * limit;
 
@@ -30,6 +30,14 @@ export async function GET(request: Request) {
 
   if (tags && tags.length > 0) {
     conditions.push(arrayContains(skills.tags, tags));
+  }
+
+  if (owner) {
+    conditions.push(eq(repos.githubOwner, owner));
+  }
+
+  if (repo) {
+    conditions.push(eq(repos.githubRepoName, repo));
   }
 
   const orderBy =

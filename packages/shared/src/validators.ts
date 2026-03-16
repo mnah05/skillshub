@@ -6,6 +6,8 @@ export const skillSearchSchema = z.object({
     .string()
     .transform((s) => s.split(",").filter(Boolean))
     .optional(),
+  owner: z.string().optional(),
+  repo: z.string().optional(),
   sort: z.enum(["stars", "downloads", "recent"]).default("stars"),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(20),
