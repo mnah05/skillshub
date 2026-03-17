@@ -16,9 +16,10 @@
     "import-github": "tsx src/import-github.ts"
   },
   "dependencies": {
+    "dotenv": "^16.4.0",
     "drizzle-orm": "^0.39.0",
-    "pg": "^8.13.0",
-    "dotenv": "^16.4.0"
+    "gray-matter": "^4.0.3",
+    "pg": "^8.13.0"
   },
   "devDependencies": {
     "@types/pg": "^8.11.0",

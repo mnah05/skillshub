@@ -8,7 +8,15 @@
     "type": "git",
     "url": "https://github.com/ComeOnOliver/skillshub"
   },
-  "keywords": ["ai", "agent", "skills", "marketplace", "nextjs", "typescript", "web3"],
+  "keywords": [
+    "ai",
+    "agent",
+    "skills",
+    "marketplace",
+    "nextjs",
+    "typescript",
+    "web3"
+  ],
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
@@ -29,5 +37,8 @@
       "sharp",
       "unrs-resolver"
     ]
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3"
   }
 }
