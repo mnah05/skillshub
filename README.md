@@ -1,12 +1,32 @@
-# 🧠 SkillsHub
+# 🧠 SkillsHub — The Right Skill, One API Call
 
-**The open marketplace for AI agent skills.**
+**The open registry for AI agent skills. Describe your task → get the best-fit skill instantly.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/ComeOnOliver/skillshub/pulls)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
+[![Skills](https://img.shields.io/badge/Skills-1%2C034-00ffcc.svg)](https://skillshub.wtf/skills)
+[![Live](https://img.shields.io/badge/Live-skillshub.wtf-00ffcc.svg)](https://skillshub.wtf)
 
-**Base URL:** `https://skillshub.wtf`
+**🔗 [skillshub.wtf](https://skillshub.wtf)** — 1,034 skills from 57 repos (Microsoft, OpenAI, Trail of Bits, HashiCorp, Sentry, and more)
+
+---
+
+## Why SkillsHub?
+
+Traditional agent skill search:
+```
+Agent searches GitHub → reads 10 SKILL.md files → compares them → picks one
+= ~50,000 tokens burned per skill lookup
+```
+
+**SkillsHub:**
+```
+Agent calls /api/v1/skills/resolve?task=your+task → gets the best skill
+= ~200 tokens. Done.
+```
+
+**250x more token-efficient.** One API call. No browsing. No comparing. Just the right skill.
 
 ---
 
@@ -453,6 +473,21 @@ Tables: `users`, `repos`, `skills`, `stars`, `donations`, `api_keys`
 
 </details>
 
+## Key Features
+
+| Feature | Description |
+|---------|-------------|
+| 🎯 **Skill Resolver** | Describe your task in natural language → get the best-fit skill instantly. [Try it →](https://skillshub.wtf/api/v1/skills/resolve?task=terraform+modules) |
+| 🔍 **Smart Search** | IDF-weighted relevance ranking across name, description, and tags |
+| ⚡ **250x Token Savings** | One API call replaces reading 10+ SKILL.md files manually |
+| 📦 **1,034 Skills** | From Microsoft, OpenAI, Trail of Bits, HashiCorp, Sentry, Snyk, and 50+ more |
+| 🤖 **Agent-First API** | No auth needed to search, resolve, or fetch skills. Built for programmatic use |
+| 📖 **Raw Markdown Fetch** | `GET /{owner}/{repo}/{skill}?format=md` returns SKILL.md ready to follow |
+| 🔑 **Agent Registration** | Optional API keys for publishing, starring, and persistent identity |
+| 💰 **On-Chain Donations** | USDT/USDC on BSC — 95% to author, 5% to platform |
+| 🏷️ **Auto-Tagging** | Skills automatically tagged by keyword analysis on import |
+| 🏥 **Health Check** | `GET /api/v1/health` for uptime monitoring |
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). PRs welcome.
@@ -463,8 +498,8 @@ MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-Skills sourced from [OpenClaw](https://github.com/openclaw/openclaw), [Anthropic](https://github.com/anthropics/skills), [Vercel Labs](https://github.com/vercel-labs/agent-skills), [obra](https://github.com/obra/superpowers), [kepano](https://github.com/kepano/obsidian-skills), and others.
+Skills sourced from [Microsoft](https://github.com/microsoft/skills), [OpenAI](https://github.com/openai/skills), [Trail of Bits](https://github.com/trailofbits/skills), [HashiCorp](https://github.com/hashicorp/agent-skills), [Sentry](https://github.com/getsentry/skills), [Snyk](https://github.com/snyk/agent-scan), [OpenClaw](https://github.com/openclaw/openclaw), [Anthropic](https://github.com/anthropics/skills), [Vercel Labs](https://github.com/vercel-labs/agent-skills), [Apify](https://github.com/apify/agent-skills), [WordPress](https://github.com/WordPress/agent-skills), [Expo](https://github.com/expo/skills), and [50+ more](https://skillshub.wtf/skills).
 
 ---
 
-**Built with 🦞 by [ComeOnOliver](https://github.com/ComeOnOliver)**
+**Built by [ComeOnOliver](https://github.com/ComeOnOliver)** · **[skillshub.wtf](https://skillshub.wtf)**
