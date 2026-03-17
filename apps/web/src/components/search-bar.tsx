@@ -9,11 +9,30 @@ export function SearchBar() {
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get("q") ?? "");
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Sync input when URL changes externally
   useEffect(() => {
     setQuery(searchParams.get("q") ?? "");
   }, [searchParams]);
+
+  // Focus search on '/' keypress when not already in an input
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        e.key === "/" &&
+        !["INPUT", "TEXTAREA", "SELECT"].includes(
+          (e.target as HTMLElement).tagName
+        ) &&
+        !(e.target as HTMLElement).isContentEditable
+      ) {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function navigate(q: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -48,12 +67,14 @@ export function SearchBar() {
         &gt;
       </div>
       <input
+        ref={inputRef}
         type="text"
         value={query}
         onChange={handleChange}
         placeholder="search skills..."
-        className="w-full rounded border border-neutral-800/60 bg-neutral-900/50 py-2 pl-7 pr-4 font-mono text-xs text-neon-cyan placeholder-neutral-600 outline-none focus:border-neon-cyan/30 focus:bg-neutral-900/80 transition-all"
+        className="w-full rounded border border-neutral-800/60 bg-neutral-900/50 py-2 pl-7 pr-10 font-mono text-xs text-neon-cyan placeholder-neutral-600 outline-none focus:border-neon-cyan/30 focus:bg-neutral-900/80 transition-all"
       />
+      <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-block rounded border border-neutral-800 bg-neutral-900 px-1.5 py-0.5 font-mono text-[10px] text-neutral-600 pointer-events-none">/</kbd>
     </form>
   );
 }

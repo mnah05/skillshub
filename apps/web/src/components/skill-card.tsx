@@ -56,7 +56,7 @@ export function SkillCard({
         </p>
       )}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex flex-wrap gap-1.5 min-w-0">
+        <div className="flex flex-wrap items-center gap-1.5 min-w-0">
           {tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
@@ -65,6 +65,11 @@ export function SkillCard({
               #{tag}
             </span>
           ))}
+          {repo.starCount > 0 && (
+            <span className="font-mono text-[10px] text-neutral-600">
+              ⭐ {repo.starCount > 1000 ? (repo.starCount / 1000).toFixed(1) + 'k' : repo.starCount}
+            </span>
+          )}
         </div>
         <span className="font-mono text-[10px] text-neutral-700 shrink-0">
           {owner.username}

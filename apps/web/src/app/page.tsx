@@ -291,7 +291,7 @@ export default async function HomePage() {
       </section>
 
       {/* ── Top Repos ─────────────────────────── */}
-      <section className="pb-24">
+      <section className="pb-16">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-mono text-sm text-neutral-400">
             <span className="text-neon-cyan/50">&gt;</span> top_repos <span className="text-neutral-600">--sort stars --limit 6</span>
@@ -301,6 +301,24 @@ export default async function HomePage() {
           </Link>
         </div>
         <TopRepos />
+      </section>
+
+      {/* ── Popular Tags ──────────────────────── */}
+      <section className="pb-24">
+        <h2 className="mb-6 font-mono text-sm text-neutral-400">
+          <span className="text-neon-cyan/50">&gt;</span> popular_tags <span className="text-neutral-600">--trending</span>
+        </h2>
+        <div className="flex flex-wrap gap-2">
+          {["ai", "security", "devops", "frontend", "backend", "coding", "testing", "agent", "python", "typescript", "database", "mobile", "design", "writing", "mcp", "data"].map((tag) => (
+            <Link
+              key={tag}
+              href={`/skills?tags=${tag}`}
+              className="rounded-full border border-neutral-800/50 bg-neutral-900/30 px-3 py-1 font-mono text-xs text-neutral-500 hover:border-neon-cyan/30 hover:text-neon-cyan hover:bg-neon-cyan/5 transition-all"
+            >
+              #{tag}
+            </Link>
+          ))}
+        </div>
       </section>
     </div>
   );

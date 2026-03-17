@@ -64,7 +64,7 @@ export function Nav() {
           {/* Network indicator */}
           <div className="hidden sm:flex items-center gap-1.5 ml-3 px-2 py-0.5 rounded-full bg-neutral-900/80 border border-neutral-800/50">
             <span className="net-pulse h-1.5 w-1.5 rounded-full bg-green-400" />
-            <span className="font-mono text-[10px] text-neutral-500">mainnet</span>
+            <span className="font-mono text-[10px] text-neutral-500">live</span>
           </div>
         </div>
         <div className="mx-6 flex-1 max-w-sm">

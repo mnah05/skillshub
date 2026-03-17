@@ -1,6 +1,6 @@
 import { getDb } from "@/lib/db";
 import { skills, repos, users, stars } from "@skillshub/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, ne, desc, sql } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { LikeButton } from "@/components/star-button";
 import { DonateButton } from "@/components/donate-button";
@@ -85,6 +85,24 @@ export default async function SkillDetailPage({ params }: Props) {
     hasStarred = !!star;
   }
 
+  // Related skills from the same repo
+  const relatedSkills = await db
+    .select({
+      slug: skills.slug,
+      name: skills.name,
+      description: skills.description,
+    })
+    .from(skills)
+    .where(
+      and(
+        eq(skills.repoId, result.repo.id),
+        ne(skills.id, result.id),
+        eq(skills.isPublished, true)
+      )
+    )
+    .orderBy(desc(skills.createdAt))
+    .limit(4);
+
   const fetchUrl = `https://skillshub.wtf/${owner}/${repo}/${skillSlug}?format=md`;
 
   return (
@@ -167,6 +185,34 @@ export default async function SkillDetailPage({ params }: Props) {
               <pre className="overflow-x-auto rounded border border-neutral-800/40 bg-[#0a0a0a] p-4 font-mono text-xs text-neutral-400">
                 {JSON.stringify(result.manifest, null, 2)}
               </pre>
+            </div>
+          )}
+
+          {/* Related Skills */}
+          {relatedSkills.length > 0 && (
+            <div className="mt-10">
+              <h2 className="mb-4 font-mono text-sm text-neutral-400">
+                <span className="text-neon-cyan/40">&gt;</span> related_skills <span className="text-neutral-600">--same-repo</span>
+              </h2>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {relatedSkills.map((s) => (
+                  <Link
+                    key={s.slug}
+                    href={`/${owner}/${repo}/${s.slug}`}
+                    className="group block rounded border border-neutral-800/50 bg-neutral-900/20 p-4 transition-all hover:border-neon-cyan/30 hover:bg-neutral-900/40"
+                  >
+                    <h3 className="font-mono text-sm font-medium text-neutral-200 group-hover:text-neon-cyan transition-colors truncate">
+                      <span className="text-neutral-600 group-hover:text-neon-cyan/50">&gt;</span>{" "}
+                      {s.name}
+                    </h3>
+                    {s.description && (
+                      <p className="mt-1 text-xs text-neutral-500 line-clamp-2 leading-relaxed">
+                        {s.description}
+                      </p>
+                    )}
+                  </Link>
+                ))}
+              </div>
             </div>
           )}
         </div>
