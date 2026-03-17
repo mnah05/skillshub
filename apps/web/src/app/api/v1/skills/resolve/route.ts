@@ -272,7 +272,16 @@ export async function GET(request: Request) {
       score: scoreSkill(row as SkillRow, tokens, tokenWeights),
     }))
     .filter((r) => r.score > 0)
-    .sort((a, b) => b.score - a.score);
+    .sort((a, b) => {
+      // Primary: score
+      if (b.score !== a.score) return b.score - a.score;
+      // Tiebreaker 1: prefer skills where more query tokens appear in the name
+      const aNameHits = tokens.filter(t => a.skill.name.toLowerCase().includes(t)).length;
+      const bNameHits = tokens.filter(t => b.skill.name.toLowerCase().includes(t)).length;
+      if (bNameHits !== aNameHits) return bNameHits - aNameHits;
+      // Tiebreaker 2: prefer higher GitHub stars
+      return b.skill.repo.starCount - a.skill.repo.starCount;
+    });
 
   const topScore = allScored[0]?.score ?? 0;
 
