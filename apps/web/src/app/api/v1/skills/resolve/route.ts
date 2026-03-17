@@ -21,10 +21,40 @@ const resolveSchema = z.object({
   threshold: z.coerce.number().min(0).max(1).default(0.3),
 });
 
+// Common multi-word phrases that should be treated as single concepts
+const PHRASE_MAP: Record<string, string> = {
+  "code review": "code-review",
+  "infrastructure as code": "infrastructure-as-code",
+  "end to end": "e2e",
+  "machine learning": "machine-learning",
+  "deep learning": "deep-learning",
+  "react native": "react-native",
+  "pull request": "pull-request",
+  "ci cd": "ci-cd",
+  "data analysis": "data-analysis",
+  "data science": "data-science",
+  "web scraping": "web-scraping",
+  "smart contract": "smart-contract",
+  "docker compose": "docker-compose",
+  "unit test": "unit-test",
+  "api design": "api-design",
+  "code signing": "code-signing",
+  "version control": "version-control",
+  "security audit": "security-audit",
+  "bug bounty": "bug-bounty",
+  "web app": "web-app",
+  "mobile app": "mobile-app",
+};
+
 function tokenize(task: string): string[] {
-  return task
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, " ")
+  let text = task.toLowerCase().replace(/[^a-z0-9\s-]/g, " ");
+
+  // Replace known phrases with hyphenated single tokens BEFORE splitting
+  for (const [phrase, token] of Object.entries(PHRASE_MAP)) {
+    text = text.replace(new RegExp(phrase, "g"), token);
+  }
+
+  return text
     .split(/\s+/)
     .filter((w) => w.length > 0 && !STOPWORDS.has(w));
 }
@@ -103,20 +133,41 @@ function scoreSkill(skill: SkillRow, tokens: string[], tokenWeights: Map<string,
   if (descCoverage >= 0.6) textScore += 10;
   else if (descCoverage >= 0.4) textScore += 5;
 
-  textScore = Math.min(textScore, 70);
+  // NEGATIVE SIGNAL: penalize skills whose name contains contradicting domains
+  // e.g., query has "nodejs" but skill is "django-perf-review" → penalty
+  const DOMAIN_CONFLICTS: Record<string, string[]> = {
+    "nodejs": ["django", "flask", "rails", "laravel", "spring"],
+    "node": ["django", "flask", "rails", "laravel", "spring"],
+    "python": ["dotnet", "csharp", "blazor", "spring", "java"],
+    "react": ["angular", "vue", "svelte", "blazor"],
+    "vue": ["react", "angular", "svelte"],
+    "angular": ["react", "vue", "svelte"],
+    "terraform": ["code-signing", "pulumi"],
+    "docker": ["jetpack", "android"],
+    "ios": ["android"],
+    "android": ["ios", "swiftui", "xcode"],
+  };
 
-  // QUALITY (0-25)
+  for (const token of tokens) {
+    const conflicts = DOMAIN_CONFLICTS[token];
+    if (conflicts && conflicts.some(c => nameLower.includes(c))) {
+      textScore -= 15; // significant penalty for wrong domain
+    }
+  }
+
+  textScore = Math.max(0, Math.min(textScore, 70));
+
+  // QUALITY (0-20) — reduced from 25 to let text relevance dominate
   const readmeLen = Math.max(skill.readmeLength, 1);
-  // log2(37) ≈ 5.2 → 0, log2(10000) ≈ 13.3 → ~10
-  const readmeScore = Math.min(10, Math.max(0, (Math.log2(readmeLen) - 5.2) * (10 / (13.3 - 5.2))));
-  const hasTagsScore = skill.tags.length > 0 ? 5 : 0;
-  const hasDescScore = (skill.description ?? "").length > 50 ? 5 : 0;
-  const tagCountScore = Math.min(skill.tags.length, 5);
+  const readmeScore = Math.min(8, Math.max(0, (Math.log2(readmeLen) - 5.2) * (8 / (13.3 - 5.2))));
+  const hasTagsScore = skill.tags.length > 0 ? 4 : 0;
+  const hasDescScore = (skill.description ?? "").length > 50 ? 4 : 0;
+  const tagCountScore = Math.min(skill.tags.length, 4);
   const qualityScore = readmeScore + hasTagsScore + hasDescScore + tagCountScore;
 
-  // POPULARITY (0-15)
+  // POPULARITY (0-10) — reduced from 15
   const stars = Math.max(skill.repo.starCount, 1);
-  const popularityScore = Math.min(15, Math.log10(stars) * 4);
+  const popularityScore = Math.min(10, Math.log10(stars) * 3);
 
   // FEEDBACK BONUS (0-10)
   let feedbackBonus = 0;
@@ -227,7 +278,7 @@ export async function GET(request: Request) {
 
   // Filter by threshold, then cap at limit
   const aboveThreshold = allScored.filter(
-    (r) => Math.round((r.score / 110) * 100) / 100 >= threshold,
+    (r) => Math.round((r.score / 100) * 100) / 100 >= threshold,
   );
   const matched = aboveThreshold.length;
   const scored = aboveThreshold.slice(0, limit);
@@ -244,7 +295,7 @@ export async function GET(request: Request) {
       owner: r.skill.owner,
     },
     score: r.score,
-    confidence: Math.round((r.score / 110) * 100) / 100,
+    confidence: Math.round((r.score / 100) * 100) / 100,
     relativeScore: topScore > 0 ? Math.round((r.score / topScore) * 100) / 100 : 0,
     fetchUrl: `${BASE_URL}/${r.skill.repo.githubOwner ?? r.skill.owner.username}/${r.skill.repo.githubRepoName ?? r.skill.slug}/${r.skill.slug}?format=md`,
   }));
