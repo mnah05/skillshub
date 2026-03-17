@@ -125,12 +125,23 @@ export default async function SkillDetailPage({ params }: Props) {
             </p>
           )}
 
-          {/* Fetch skill */}
-          <div className="mt-6 flex items-center gap-2 rounded border border-neutral-800/40 bg-[#0a0a0a] px-4 py-3">
-            <code className="flex-1 font-mono text-xs text-neutral-400 truncate">
-              curl &quot;{fetchUrl}&quot;
-            </code>
-            <CopyButton text={`curl "${fetchUrl}"`} />
+          {/* Fetch skill — terminal style */}
+          <div className="mt-6 rounded border border-neutral-800/60 bg-[#0a0a0a] overflow-hidden">
+            <div className="flex items-center justify-between px-3 py-1.5 border-b border-neutral-800/40">
+              <div className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-red-500/50" />
+                <span className="h-2 w-2 rounded-full bg-yellow-500/50" />
+                <span className="h-2 w-2 rounded-full bg-green-500/50" />
+              </div>
+              <span className="font-mono text-[10px] text-neutral-700">fetch</span>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-3">
+              <span className="font-mono text-xs text-neon-cyan/50 select-none">$</span>
+              <code className="flex-1 font-mono text-xs text-terminal-green truncate">
+                curl &quot;{fetchUrl}&quot;
+              </code>
+              <CopyButton text={`curl "${fetchUrl}"`} />
+            </div>
           </div>
 
           {/* README */}
