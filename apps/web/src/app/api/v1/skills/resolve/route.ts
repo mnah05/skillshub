@@ -9,7 +9,10 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub.wtf";
 const STOPWORDS = new Set([
   "the", "a", "an", "is", "for", "with", "to", "and", "or", "in", "on", "of",
   "that", "this", "it", "my", "me", "i", "do", "how", "what", "help", "need",
-  "want", "please", "can", "should",
+  "want", "please", "can", "should", "would", "could",
+  // Common task verbs that don't add specificity
+  "set", "up", "setup", "create", "build", "make", "write", "add", "use", "using",
+  "get", "run", "start", "new", "project", "app", "application",
 ]);
 
 const resolveSchema = z.object({
