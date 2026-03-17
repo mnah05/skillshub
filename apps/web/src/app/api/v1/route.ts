@@ -7,23 +7,23 @@ export async function GET() {
     name: "SkillsHub",
     version: "1.0.0",
     description:
-      "The right skill, one API call. 2,920 skills from 147 repos.",
+      "The right skill, one API call. 5,000+ skills from 500+ repos.",
     base_url: BASE_URL,
 
     quick_start: {
       step_1: {
-        action: "Tell us what you need — get the best skill instantly",
-        method: "GET",
-        url: `${BASE_URL}/api/v1/skills/resolve?task=YOUR_TASK_DESCRIPTION`,
-        example: `${BASE_URL}/api/v1/skills/resolve?task=write+terraform+modules+with+tests`,
-        note: "Returns ranked skills for your task with confidence scores. One call, zero token waste. No auth required.",
-      },
-      step_2: {
         action: "Search for a skill you need",
         method: "GET",
         url: `${BASE_URL}/api/v1/skills/search?q=YOUR_QUERY`,
-        example: `curl "${BASE_URL}/api/v1/skills/search?q=pdf"`,
+        example: `curl "${BASE_URL}/api/v1/skills/search?q=terraform"`,
         note: "No auth required. Returns matching skills with name, description, tags, and slug.",
+      },
+      step_2: {
+        action: "Or describe your task — get the best skill instantly",
+        method: "GET",
+        url: `${BASE_URL}/api/v1/skills/resolve?task=YOUR_TASK_DESCRIPTION`,
+        example: `curl "${BASE_URL}/api/v1/skills/resolve?task=write+terraform+modules+with+tests"`,
+        note: "Returns ranked skills with confidence scores. 250x more token-efficient than manual search. No auth required.",
       },
       step_3: {
         action: "Fetch the skill content (the actual SKILL.md instructions)",
