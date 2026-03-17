@@ -97,9 +97,9 @@ const TAG_RULES: Record<string, string[]> = {
   'monitoring': ['monitoring', 'observability', 'logging', 'tracing', 'sentry', 'datadog', 'prometheus', 'grafana'],
 };
 
-function generateTags(name: string, description: string, readme: string): string[] {
-  // Scan name + description + first 1500 chars of readme
-  const text = (name + ' ' + (description || '') + ' ' + (readme || '').slice(0, 1500)).toLowerCase();
+function generateTags(name: string, description: string, _readme: string): string[] {
+  // ONLY scan name + description — readme mentions too many technologies in passing and causes tag spam
+  const text = (name + ' ' + (description || '')).toLowerCase();
   const tags: string[] = [];
 
   for (const [tag, keywords] of Object.entries(TAG_RULES)) {
@@ -137,18 +137,16 @@ async function main() {
     const oldTags = skill.currentTags || [];
     const newTags = generateTags(skill.name, skill.description || '', skill.readme || '');
 
-    // Merge old + new tags (keep existing, add new ones)
-    const merged = [...new Set([...oldTags, ...newTags])].slice(0, 15);
-
+    // REPLACE tags entirely — old tags may be polluted
     tagsBefore += oldTags.length;
-    tagsAfter += merged.length;
+    tagsAfter += newTags.length;
 
-    if (merged.length > oldTags.length) {
-      await db.update(skills).set({ tags: merged }).where(eq(skills.id, skill.id));
+    if (JSON.stringify(newTags.sort()) !== JSON.stringify(oldTags.sort())) {
+      await db.update(skills).set({ tags: newTags }).where(eq(skills.id, skill.id));
       updated++;
       if (updated <= 10) {
-        console.log(`  ${skill.name}: ${oldTags.length} → ${merged.length} tags (+${merged.length - oldTags.length})`);
-        console.log(`    added: ${merged.filter(t => !oldTags.includes(t)).join(', ')}`);
+        console.log(`  ${skill.name}: ${oldTags.length} → ${newTags.length} tags (+${newTags.length - oldTags.length})`);
+        console.log(`    added: ${newTags.filter(t => !oldTags.includes(t)).join(', ')}`);
       }
     }
   }
