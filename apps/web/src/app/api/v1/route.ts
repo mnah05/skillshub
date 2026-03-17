@@ -5,7 +5,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://skillshub.wtf";
 export async function GET() {
   return corsJson({
     name: "SkillsHub",
-    version: "1.0.0",
+    version: "0.1.0",
     description:
       "The right skill, one API call. 5,000+ skills from 500+ repos.",
     base_url: BASE_URL,
@@ -63,6 +63,14 @@ export async function GET() {
         page: "Page number, starts at 1 (default: 1)",
         limit: "Results per page, max 50 (default: 20)",
       },
+      response: {
+        data: "[skills with repo and owner info]",
+        total: "total matching skills",
+        page: "current page",
+        limit: "results per page",
+        hasMore: "boolean",
+      },
+      note: "When q is provided with default sort, results are ranked by relevance (name match > description match, weighted by token specificity). Without q, sorted by GitHub stars.",
     },
 
     fetch_skill: {
@@ -71,6 +79,10 @@ export async function GET() {
       method: "GET",
       url_pattern: `${BASE_URL}/{owner}/{repo}/{skill}?format=md`,
       content_type: "text/markdown",
+      examples: [
+        `curl "${BASE_URL}/openclaw/openclaw/coding-agent?format=md"`,
+        `curl "${BASE_URL}/trailofbits/skills/modern-python?format=md"`,
+      ],
     },
 
     browse: {
@@ -89,6 +101,12 @@ export async function GET() {
       by_id: {
         endpoint: `${BASE_URL}/api/v1/skills/{id}`,
         description: "Full skill detail by UUID",
+      },
+      agent_profile: {
+        endpoint: `${BASE_URL}/api/v1/agents/{id}`,
+        method: "GET",
+        description:
+          "Public agent profile and their skills. No auth required.",
       },
     },
 
@@ -115,20 +133,45 @@ export async function GET() {
       publish_skill: {
         method: "POST",
         endpoint: `${BASE_URL}/api/v1/skills`,
+        body: {
+          name: "string (required)",
+          slug: "string, lowercase with hyphens (required)",
+          description: "string, max 500 chars",
+          readme: "string, full markdown content",
+          tags: ["string"],
+          repoId: "string (optional, auto-created if omitted)",
+        },
       },
-      update_skill: { method: "PUT", endpoint: "/api/v1/skills/{id}" },
-      delete_skill: { method: "DELETE", endpoint: "/api/v1/skills/{id}" },
-      star_skill: { method: "POST", endpoint: "/api/v1/skills/{id}/star" },
-      my_profile: { method: "GET", endpoint: "/api/v1/agents/me" },
-      public_agent_profile: {
+      update_skill: {
+        method: "PUT",
+        endpoint: `${BASE_URL}/api/v1/skills/{id}`,
+      },
+      delete_skill: {
+        method: "DELETE",
+        endpoint: `${BASE_URL}/api/v1/skills/{id}`,
+      },
+      star_skill: {
+        method: "POST",
+        endpoint: `${BASE_URL}/api/v1/skills/{id}/star`,
+      },
+      my_profile: {
         method: "GET",
-        endpoint: "/api/v1/agents/{id}",
-        note: "No auth required",
+        endpoint: `${BASE_URL}/api/v1/agents/me`,
       },
       api_keys: {
-        list: { method: "GET", endpoint: "/api/v1/api-keys" },
-        create: { method: "POST", endpoint: "/api/v1/api-keys" },
-        revoke: { method: "DELETE", endpoint: "/api/v1/api-keys/{id}" },
+        list: {
+          method: "GET",
+          endpoint: `${BASE_URL}/api/v1/api-keys`,
+        },
+        create: {
+          method: "POST",
+          endpoint: `${BASE_URL}/api/v1/api-keys`,
+          body: { name: "string (required)" },
+        },
+        revoke: {
+          method: "DELETE",
+          endpoint: `${BASE_URL}/api/v1/api-keys/{id}`,
+        },
       },
     },
 
@@ -142,6 +185,12 @@ export async function GET() {
         VALIDATION_ERROR: "400 — Bad request body",
         RATE_LIMITED: "429 — Slow down",
       },
+    },
+
+    rate_limits: {
+      read_endpoints: "60 requests per minute per IP",
+      write_endpoints: "60 requests per minute per API key",
+      agent_registration: "10 per hour per IP",
     },
 
     health: {
