@@ -179,7 +179,7 @@ export default async function HomePage() {
                 <span className="text-neon-cyan/50">#</span> start here — point your agent to this URL
               </div>
               <div className="mt-1 text-neutral-500">
-                <span className="text-neon-cyan">$</span> curl &quot;<a href="/api" className="text-neon-cyan/80 hover:text-neon-cyan underline underline-offset-2 decoration-neon-cyan/30 hover:decoration-neon-cyan transition-all">skillshub.wtf/api</a>&quot;
+                <span className="text-neon-cyan">$</span> curl &quot;<a href="/api/v1" className="text-neon-cyan/80 hover:text-neon-cyan underline underline-offset-2 decoration-neon-cyan/30 hover:decoration-neon-cyan transition-all">skillshub.wtf/api/v1</a>&quot;
               </div>
               <div className="mt-1 text-neutral-600">
                 <span className="text-neon-lime">→</span> {`{"quick_start":...,"resolve":...,"search":...}`}
