@@ -126,12 +126,23 @@ function scoreSkill(skill: SkillRow, tokens: string[], tokenWeights: Map<string,
 
   // Bonus: multiple tokens hitting the name = very relevant
   if (nameHits >= 2) textScore += 12;
+  // Super bonus: ALL query tokens match the name — this IS the skill
+  if (tokens.length >= 2 && nameHits === tokens.length) textScore += 20;
+
+  // Bonus: name coverage ratio — what % of query tokens appear in name?
+  const nameCoverage = tokens.length > 0 ? nameHits / tokens.length : 0;
+  if (nameCoverage >= 0.75) textScore += 8;
 
   // Bonus: high description coverage = the skill is about this topic
-  // If 60%+ of query tokens appear in description, big boost
   const descCoverage = tokens.length > 0 ? descHits / tokens.length : 0;
   if (descCoverage >= 0.6) textScore += 10;
   else if (descCoverage >= 0.4) textScore += 5;
+
+  // Penalty: skill name contains many words NOT in the query = probably a different topic
+  // e.g., "azure-resource-manager-playwright-dotnet" for query "playwright e2e testing"
+  const nameWordCount = nameParts.length;
+  const nameNonMatchRatio = nameWordCount > 0 ? (nameWordCount - nameHits) / nameWordCount : 0;
+  if (nameWordCount >= 4 && nameNonMatchRatio > 0.7) textScore -= 5; // long name, mostly unrelated words
 
   // NEGATIVE SIGNAL: penalize skills whose name contains contradicting domains
   // e.g., query has "nodejs" but skill is "django-perf-review" → penalty
