@@ -1,0 +1,19 @@
+webapp:
+  - changed-files:
+      - any-glob-to-any-file: 'apps/web/**'
+
+api:
+  - changed-files:
+      - any-glob-to-any-file: 'apps/api/**'
+
+database:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/db/**'
+
+shared:
+  - changed-files:
+      - any-glob-to-any-file: 'packages/shared/**'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file: '**/*.md'
