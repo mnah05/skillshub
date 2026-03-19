@@ -17,7 +17,22 @@ const firaCode = Fira_Code({
 
 export const metadata: Metadata = {
   title: "SkillsHub — AI Agent Skills Registry",
-  description: "Discover, share, and monetize AI agent skills. Built by degens, for degens.",
+  description:
+    "Discover AI agent skills. One API call to find the right skill for any task.",
+  openGraph: {
+    title: "SkillsHub — AI Agent Skills Registry",
+    description:
+      "Discover AI agent skills. One API call to find the right skill for any task.",
+    url: "https://skillshub.wtf",
+    type: "website",
+    images: [{ url: "https://skillshub.wtf/og-image.png" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SkillsHub — AI Agent Skills Registry",
+    description:
+      "Discover AI agent skills. One API call to find the right skill for any task.",
+  },
 };
 
 export default function RootLayout({
