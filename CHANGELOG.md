@@ -1,3 +1,47 @@
+## [0.2.0] - 2026-03-19
+
+### Resolve Algorithm v2
+- Replace TF-IDF with multi-field BM25 scoring (name ×5.0, description ×3.0, tags ×3.5)
+- Compound term detection auto-generated from 5,300+ skill slugs + 60 curated phrases
+- Anchor token detection — technology-specific terms weighted higher
+- Vendor prefix penalty — 16 vendor prefixes penalized when not in query
+- Composite rejection gate — returns matched:0 with noMatchReason instead of garbage
+- Sigmoid confidence calibration — wrong results now show low confidence
+- All v1 keyword pollution failures fixed (hook, feature, proxy, mcp)
+
+### Performance
+- In-memory skill cache with 5-minute TTL (700ms → ~300ms on cache hit)
+- Pre-computed BM25 corpus stats (avgFieldLengths, documentFrequencies)
+- Vercel edge cache (s-maxage=60, stale-while-revalidate=300)
+- Server-Timing header for observability
+
+### Rate Limiting
+- Upstash Redis with sliding window algorithm
+- Read endpoints: 60 req/min per IP
+- Write endpoints: 20 req/min per IP
+- Agent registration: 5 req/hour per IP
+- X-RateLimit-Limit/Remaining/Reset + Retry-After headers
+- Body size limit: 100KB max (413 Payload Too Large)
+- Fail-open: Upstash outage doesn't crash the API
+
+### Authentication
+- Auth.js v5 migration (from arctic + iron-session)
+- Google OAuth provider (new)
+- Email magic link via Resend (new)
+- Custom dark-themed verification page and branded email template
+
+### Data
+- Batch 7 import: 881 new skills from ComposioHQ, K-Dense-AI, App Store Connect, Eigent
+- Total: 5,355 published skills from 227 repos
+
+### Community & Infrastructure
+- CONTRIBUTING.md, 3 issue templates (bug/feature/skill-import)
+- 10 agent-friendly issues (#21-#30)
+- GitHub Discussions enabled
+- 3 awesome-list PRs submitted
+- Auto-release on every push to main
+- Dynamic version from package.json
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
