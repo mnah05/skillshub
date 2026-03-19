@@ -129,7 +129,7 @@ function AgentTerminal() {
       </div>
       <div className="mt-1 text-neutral-600">
         <span className="text-neon-lime">→</span>{" "}
-        {`{"skill":"terraform-skill","confidence":0.92,"fetchUrl":"..."}`}
+        {`{"skill":"terraform-skill","confidence":0.83,"fetchUrl":"..."}`}
       </div>
       <div className="mt-3 text-neutral-600">
         <span className="text-neon-cyan/50">#</span> fetch and follow the skill
