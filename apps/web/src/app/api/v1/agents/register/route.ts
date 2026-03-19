@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { writeCorsJson, methodNotAllowed, writeOPTIONS, formatZodError } from "@/lib/api-cors";
 import { users, apiKeys } from "@skillshub/db/schema";
 import { agentRegisterSchema } from "@skillshub/shared/validators";
 import { eq } from "drizzle-orm";
@@ -18,8 +18,9 @@ export async function POST(request: Request) {
   const parsed = agentRegisterSchema.safeParse(body);
 
   if (!parsed.success) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: formatZodError(parsed.error) } },
+      request,
       { status: 400 }
     );
   }
@@ -34,8 +35,9 @@ export async function POST(request: Request) {
     .limit(1);
 
   if (existing) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "CONFLICT", message: "Username already taken" } },
+      request,
       { status: 409 }
     );
   }
@@ -62,7 +64,7 @@ export async function POST(request: Request) {
     keyPrefix: rawKey.slice(0, 12) + "...",
   });
 
-  return corsJson(
+  return writeCorsJson(
     {
       data: {
         id: agent.id,
@@ -70,6 +72,7 @@ export async function POST(request: Request) {
         apiKey: rawKey, // Only shown once
       },
     },
+    request,
     { status: 201 }
   );
 }
@@ -78,4 +81,4 @@ export async function GET() { return methodNotAllowed(["POST"]); }
 export async function PUT() { return methodNotAllowed(["POST"]); }
 export async function DELETE() { return methodNotAllowed(["POST"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }

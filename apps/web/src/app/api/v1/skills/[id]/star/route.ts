@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions } from "@/lib/api-cors";
+import { writeCorsJson, methodNotAllowed, writeOPTIONS } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { skills, repos, stars } from "@skillshub/db/schema";
 import { eq, and, sql } from "drizzle-orm";
@@ -15,8 +15,9 @@ export async function POST(
 
   const { id: skillId } = await params;
   if (!UUID_RE.test(skillId)) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -30,8 +31,9 @@ export async function POST(
     .limit(1);
 
   if (!skill) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -73,11 +75,11 @@ export async function POST(
     }
   });
 
-  return corsJson({ data: result });
+  return writeCorsJson({ data: result }, request);
 }
 
 export async function GET() { return methodNotAllowed(["POST"]); }
 export async function PUT() { return methodNotAllowed(["POST"]); }
 export async function DELETE() { return methodNotAllowed(["POST"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }

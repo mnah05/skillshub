@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions } from "@/lib/api-cors";
+import { writeCorsJson, methodNotAllowed, writeOPTIONS } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { apiKeys } from "@skillshub/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -15,8 +15,9 @@ export async function DELETE(
 
   const { id: keyId } = await params;
   if (!UUID_RE.test(keyId)) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "API key not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -30,8 +31,9 @@ export async function DELETE(
     .limit(1);
 
   if (!key) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "API key not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -41,11 +43,11 @@ export async function DELETE(
     .set({ revokedAt: new Date() })
     .where(eq(apiKeys.id, keyId));
 
-  return corsJson({ data: { id: keyId, revoked: true } });
+  return writeCorsJson({ data: { id: keyId, revoked: true } }, request);
 }
 
 export async function GET() { return methodNotAllowed(["DELETE"]); }
 export async function POST() { return methodNotAllowed(["DELETE"]); }
 export async function PUT() { return methodNotAllowed(["DELETE"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }

@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, writeCorsJson, methodNotAllowed, writeOPTIONS, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { skills, skillFeedback } from "@skillshub/db/schema";
 import { eq, sql, desc } from "drizzle-orm";
@@ -23,8 +23,9 @@ export async function POST(
   const { id } = await params;
 
   if (!UUID_RE.test(id)) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: "Invalid skill ID format" } },
+      request,
       { status: 400 }
     );
   }
@@ -33,16 +34,18 @@ export async function POST(
   try {
     body = await request.json();
   } catch {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: "Invalid JSON body" } },
+      request,
       { status: 400 }
     );
   }
 
   const parsed = feedbackSchema.safeParse(body);
   if (!parsed.success) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: formatZodError(parsed.error) } },
+      request,
       { status: 400 }
     );
   }
@@ -57,8 +60,9 @@ export async function POST(
     .limit(1);
 
   if (!skill) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -97,10 +101,10 @@ export async function POST(
     })
     .where(eq(skills.id, id));
 
-  return corsJson({
+  return writeCorsJson({
     recorded: true,
     stats: { helpfulRate, totalFeedback },
-  });
+  }, request);
 }
 
 export async function GET(
@@ -156,4 +160,4 @@ export async function GET(
 export async function PUT() { return methodNotAllowed(["GET", "POST"]); }
 export async function DELETE() { return methodNotAllowed(["GET", "POST"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }

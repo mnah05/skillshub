@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, writeCorsJson, methodNotAllowed, OPTIONS as corsOptions, writeOPTIONS, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { createSkillSchema } from "@skillshub/shared/validators";
@@ -12,8 +12,9 @@ export async function POST(request: Request) {
   const body = await request.json();
   const parsed = createSkillSchema.safeParse(body);
   if (!parsed.success) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: formatZodError(parsed.error) } },
+      request,
       { status: 400 }
     );
   }
@@ -61,8 +62,9 @@ export async function POST(request: Request) {
     .limit(1);
 
   if (duplicateByName) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "CONFLICT", message: "A skill with this name already exists in this repo. Use PUT to update it." } },
+      request,
       { status: 409 }
     );
   }
@@ -75,8 +77,9 @@ export async function POST(request: Request) {
     .limit(1);
 
   if (existing) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "CONFLICT", message: "Slug already taken" } },
+      request,
       { status: 409 }
     );
   }
@@ -91,11 +94,11 @@ export async function POST(request: Request) {
     })
     .returning();
 
-  return corsJson({ data: created }, { status: 201 });
+  return writeCorsJson({ data: created }, request, { status: 201 });
 }
 
 export async function GET() { return methodNotAllowed(["POST"]); }
 export async function PUT() { return methodNotAllowed(["POST"]); }
 export async function DELETE() { return methodNotAllowed(["POST"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }

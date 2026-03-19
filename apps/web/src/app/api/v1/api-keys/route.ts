@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, writeCorsJson, methodNotAllowed, writeOPTIONS, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { apiKeys } from "@skillshub/db/schema";
 import { createApiKeySchema } from "@skillshub/shared/validators";
@@ -35,8 +35,9 @@ export async function POST(request: Request) {
   const parsed = createApiKeySchema.safeParse(body);
 
   if (!parsed.success) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: formatZodError(parsed.error) } },
+      request,
       { status: 400 }
     );
   }
@@ -56,7 +57,7 @@ export async function POST(request: Request) {
     })
     .returning();
 
-  return corsJson(
+  return writeCorsJson(
     {
       data: {
         id: created.id,
@@ -66,6 +67,7 @@ export async function POST(request: Request) {
         createdAt: created.createdAt,
       },
     },
+    request,
     { status: 201 }
   );
 }
@@ -73,4 +75,4 @@ export async function POST(request: Request) {
 export async function PUT() { return methodNotAllowed(["GET", "POST"]); }
 export async function DELETE() { return methodNotAllowed(["GET", "POST"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }

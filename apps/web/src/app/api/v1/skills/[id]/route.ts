@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, writeCorsJson, methodNotAllowed, OPTIONS as corsOptions, writeOPTIONS, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { updateSkillSchema } from "@skillshub/shared/validators";
@@ -78,8 +78,9 @@ export async function PUT(
 
   const { id } = await params;
   if (!UUID_RE.test(id)) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -87,8 +88,9 @@ export async function PUT(
   const body = await request.json();
   const parsed = updateSkillSchema.safeParse(body);
   if (!parsed.success) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "VALIDATION_ERROR", message: formatZodError(parsed.error) } },
+      request,
       { status: 400 }
     );
   }
@@ -102,15 +104,17 @@ export async function PUT(
     .limit(1);
 
   if (!skill) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
 
   if (skill.ownerId !== auth.userId) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "FORBIDDEN", message: "Not the owner" } },
+      request,
       { status: 403 }
     );
   }
@@ -121,7 +125,7 @@ export async function PUT(
     .where(eq(skills.id, id))
     .returning();
 
-  return corsJson({ data: updated });
+  return writeCorsJson({ data: updated }, request);
 }
 
 export async function DELETE(
@@ -133,8 +137,9 @@ export async function DELETE(
 
   const { id } = await params;
   if (!UUID_RE.test(id)) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
@@ -148,24 +153,26 @@ export async function DELETE(
     .limit(1);
 
   if (!skill) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "NOT_FOUND", message: "Skill not found" } },
+      request,
       { status: 404 }
     );
   }
 
   if (skill.ownerId !== auth.userId) {
-    return corsJson(
+    return writeCorsJson(
       { error: { code: "FORBIDDEN", message: "Not the owner" } },
+      request,
       { status: 403 }
     );
   }
 
   await db.delete(skills).where(eq(skills.id, id));
 
-  return corsJson({ data: { id, deleted: true } });
+  return writeCorsJson({ data: { id, deleted: true } }, request);
 }
 
 export async function POST() { return methodNotAllowed(["GET", "PUT", "DELETE"]); }
 
-export { corsOptions as OPTIONS };
+export function OPTIONS(request: Request) { return writeOPTIONS(request); }
