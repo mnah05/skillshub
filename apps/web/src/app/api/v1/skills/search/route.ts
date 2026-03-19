@@ -64,6 +64,19 @@ export async function GET(request: Request) {
   }
 
   const { q, tags, owner, repo, sort, page, limit } = parsed.data;
+
+  if (!q || q.trim().length < 2) {
+    return corsJson(
+      {
+        error: {
+          code: "VALIDATION_ERROR",
+          message: "Search query (q) is required. Minimum 2 characters.",
+        },
+      },
+      { status: 400 },
+    );
+  }
+
   const db = getDb();
   const offset = (page - 1) * limit;
 
