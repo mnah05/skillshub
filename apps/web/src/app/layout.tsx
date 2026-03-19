@@ -16,6 +16,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://skillshub.wtf"),
   title: "SkillsHub — AI Agent Skills Registry",
   description:
     "Discover AI agent skills. One API call to find the right skill for any task.",
