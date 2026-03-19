@@ -4,6 +4,13 @@ const nextConfig: NextConfig = {
   transpilePackages: ["@skillshub/db", "@skillshub/shared"],
   serverExternalPackages: ["pg"],
   poweredByHeader: false,
+  redirects: async () => [
+    {
+      source: "/browse",
+      destination: "/skills",
+      permanent: false,
+    },
+  ],
   headers: async () => [
     {
       source: "/(.*)",
