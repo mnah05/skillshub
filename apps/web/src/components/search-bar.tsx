@@ -72,6 +72,7 @@ export function SearchBar() {
         value={query}
         onChange={handleChange}
         placeholder="search skills..."
+        aria-label="Search skills"
         className="w-full rounded border border-neutral-800/60 bg-neutral-900/50 py-2 pl-7 pr-10 font-mono text-xs text-neon-cyan placeholder-neutral-600 outline-none focus:border-neon-cyan/30 focus:bg-neutral-900/80 transition-all"
       />
       <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-block rounded border border-neutral-800 bg-neutral-900 px-1.5 py-0.5 font-mono text-[10px] text-neutral-600 pointer-events-none">/</kbd>

@@ -17,6 +17,7 @@ export function CopyButton({ text }: { text: string }) {
       onClick={handleCopy}
       className="flex h-8 w-8 items-center justify-center rounded-md text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-neutral-200"
       title="Copy to clipboard"
+      aria-label="Copy to clipboard"
     >
       {copied ? (
         <Check className="h-4 w-4 text-green-500" />
