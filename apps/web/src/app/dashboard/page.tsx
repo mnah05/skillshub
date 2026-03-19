@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getUser } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { getDb } from "@/lib/db";

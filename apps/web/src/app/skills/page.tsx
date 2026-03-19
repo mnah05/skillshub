@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { getDb } from "@/lib/db";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { eq, desc, and, sql, arrayContains } from "drizzle-orm";
