@@ -12,7 +12,7 @@ export async function GET() {
     name: "SkillsHub",
     version: "0.1.0",
     description:
-      "The right skill, one API call. 5,000+ skills from 500+ repos.",
+      "The right skill, one API call. 4,800+ skills from 200+ repos.",
     base_url: BASE_URL,
 
     agent_onboarding: {
