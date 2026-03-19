@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { createSkillSchema } from "@skillshub/shared/validators";
@@ -79,5 +79,9 @@ export async function POST(request: Request) {
 
   return corsJson({ data: created }, { status: 201 });
 }
+
+export async function GET() { return methodNotAllowed(["POST"]); }
+export async function PUT() { return methodNotAllowed(["POST"]); }
+export async function DELETE() { return methodNotAllowed(["POST"]); }
 
 export { corsOptions as OPTIONS };

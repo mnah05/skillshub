@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { updateSkillSchema } from "@skillshub/shared/validators";
@@ -165,5 +165,7 @@ export async function DELETE(
 
   return corsJson({ data: { id, deleted: true } });
 }
+
+export async function POST() { return methodNotAllowed(["GET", "PUT", "DELETE"]); }
 
 export { corsOptions as OPTIONS };

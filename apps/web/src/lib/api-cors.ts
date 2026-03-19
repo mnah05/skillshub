@@ -19,6 +19,13 @@ export function corsJson(data: unknown, init?: { status?: number }) {
   });
 }
 
+export function methodNotAllowed(allowed: string[]) {
+  return corsJson(
+    { error: { code: "METHOD_NOT_ALLOWED", message: `Method not allowed. Use ${allowed.join(", ")} for this endpoint.` } },
+    { status: 405 }
+  );
+}
+
 export function OPTIONS() {
   return new Response(null, { status: 204, headers: corsHeaders });
 }

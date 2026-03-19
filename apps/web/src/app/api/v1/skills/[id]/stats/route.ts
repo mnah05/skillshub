@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions } from "@/lib/api-cors";
 import { skills } from "@skillshub/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -45,5 +45,9 @@ export async function GET(
     trustScore: Number(skill.trustScore),
   });
 }
+
+export async function POST() { return methodNotAllowed(["GET"]); }
+export async function PUT() { return methodNotAllowed(["GET"]); }
+export async function DELETE() { return methodNotAllowed(["GET"]); }
 
 export { corsOptions as OPTIONS };

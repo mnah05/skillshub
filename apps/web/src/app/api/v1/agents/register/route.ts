@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
 import { users, apiKeys } from "@skillshub/db/schema";
 import { agentRegisterSchema } from "@skillshub/shared/validators";
 import { eq } from "drizzle-orm";
@@ -73,5 +73,9 @@ export async function POST(request: Request) {
     { status: 201 }
   );
 }
+
+export async function GET() { return methodNotAllowed(["POST"]); }
+export async function PUT() { return methodNotAllowed(["POST"]); }
+export async function DELETE() { return methodNotAllowed(["POST"]); }
 
 export { corsOptions as OPTIONS };

@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { apiKeys } from "@skillshub/db/schema";
 import { eq, and } from "drizzle-orm";
@@ -43,5 +43,9 @@ export async function DELETE(
 
   return corsJson({ data: { id: keyId, revoked: true } });
 }
+
+export async function GET() { return methodNotAllowed(["DELETE"]); }
+export async function POST() { return methodNotAllowed(["DELETE"]); }
+export async function PUT() { return methodNotAllowed(["DELETE"]); }
 
 export { corsOptions as OPTIONS };

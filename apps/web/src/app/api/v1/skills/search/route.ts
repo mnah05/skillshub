@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
 import { skills, repos, users } from "@skillshub/db/schema";
 import { skillSearchSchema } from "@skillshub/shared/validators";
 import { eq, desc, sql, and, arrayContains } from "drizzle-orm";
@@ -147,5 +147,9 @@ export async function GET(request: Request) {
     hasMore: offset + limit < total,
   });
 }
+
+export async function POST() { return methodNotAllowed(["GET"]); }
+export async function PUT() { return methodNotAllowed(["GET"]); }
+export async function DELETE() { return methodNotAllowed(["GET"]); }
 
 export { corsOptions as OPTIONS };

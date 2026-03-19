@@ -1,5 +1,5 @@
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { users } from "@skillshub/db/schema";
 import { eq } from "drizzle-orm";
@@ -36,5 +36,9 @@ export async function GET(request: Request) {
 
   return corsJson({ data: user });
 }
+
+export async function POST() { return methodNotAllowed(["GET"]); }
+export async function PUT() { return methodNotAllowed(["GET"]); }
+export async function DELETE() { return methodNotAllowed(["GET"]); }
 
 export { corsOptions as OPTIONS };

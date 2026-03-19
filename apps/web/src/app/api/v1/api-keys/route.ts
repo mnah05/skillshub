@@ -1,6 +1,6 @@
 import crypto from "node:crypto";
 import { getDb } from "@/lib/db";
-import { corsJson, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
+import { corsJson, methodNotAllowed, OPTIONS as corsOptions, formatZodError } from "@/lib/api-cors";
 import { authenticateApiKey, isAuthError } from "@/lib/api-key-auth";
 import { apiKeys } from "@skillshub/db/schema";
 import { createApiKeySchema } from "@skillshub/shared/validators";
@@ -69,5 +69,8 @@ export async function POST(request: Request) {
     { status: 201 }
   );
 }
+
+export async function PUT() { return methodNotAllowed(["GET", "POST"]); }
+export async function DELETE() { return methodNotAllowed(["GET", "POST"]); }
 
 export { corsOptions as OPTIONS };
