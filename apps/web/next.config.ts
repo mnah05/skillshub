@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
       destination: "/skills",
       permanent: false,
     },
+    {
+      source: "/search",
+      destination: "/skills",
+      permanent: false,
+    },
   ],
   headers: async () => [
     {
