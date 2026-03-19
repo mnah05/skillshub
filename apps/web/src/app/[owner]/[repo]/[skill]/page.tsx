@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getDb } from "@/lib/db";
 import { skills, repos, users, stars } from "@skillshub/db/schema";
 import { eq, and, ne, desc, sql } from "drizzle-orm";
@@ -15,6 +16,52 @@ import { getRepoStars } from "@/lib/ungh";
 
 interface Props {
   params: Promise<{ owner: string; repo: string; skill: string }>;
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { owner, repo, skill: skillSlug } = await params;
+  const db = getDb();
+
+  const [result] = await db
+    .select({
+      name: skills.name,
+      description: skills.description,
+    })
+    .from(skills)
+    .innerJoin(repos, eq(skills.repoId, repos.id))
+    .where(
+      and(
+        eq(repos.githubOwner, owner),
+        eq(repos.githubRepoName, repo),
+        eq(skills.slug, skillSlug)
+      )
+    )
+    .limit(1);
+
+  if (!result) {
+    return { title: "Skill not found | SkillsHub" };
+  }
+
+  const title = `${result.name} — ${owner}/${repo} | SkillsHub`;
+  const description = result.description
+    ? result.description.slice(0, 160)
+    : `${result.name} skill from ${owner}/${repo} on SkillsHub`;
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `https://skillshub.wtf/${owner}/${repo}/${skillSlug}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+  };
 }
 
 export default async function SkillDetailPage({ params }: Props) {
