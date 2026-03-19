@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Resend from "next-auth/providers/resend";
+import { Resend as ResendClient } from "resend";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { createDb } from "@skillshub/db/client";
 import {
@@ -44,6 +45,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
+    verifyRequest: "/verify-request",
   },
   providers: [
     GitHub({
@@ -64,6 +66,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Resend({
       apiKey: process.env.RESEND_API_KEY,
       from: "SkillsHub <noreply@skillshub.wtf>",
+      async sendVerificationRequest({ identifier: email, url, provider }) {
+        const resend = new ResendClient(process.env.RESEND_API_KEY);
+        await resend.emails.send({
+          from: provider.from as string,
+          to: email,
+          subject: "Sign in to SkillsHub",
+          html: `
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8" /></head>
+<body style="margin:0;padding:0;background:#050505;font-family:'Courier New',Courier,monospace;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#050505;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="480" cellpadding="0" cellspacing="0" style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:8px;padding:40px;">
+        <tr><td style="padding-bottom:24px;font-size:20px;color:#00FFD1;font-family:'Courier New',Courier,monospace;">
+          &gt;_ SkillsHub
+        </td></tr>
+        <tr><td style="padding-bottom:8px;font-size:14px;color:#e5e5e5;font-family:'Courier New',Courier,monospace;">
+          &gt; sign-in request received
+        </td></tr>
+        <tr><td style="padding-bottom:32px;font-size:13px;color:#737373;font-family:'Courier New',Courier,monospace;">
+          Click the button below to sign in. If you didn't request this, you can safely ignore it.
+        </td></tr>
+        <tr><td align="center" style="padding-bottom:32px;">
+          <a href="${url}" style="display:inline-block;background:#00FFD1;color:#050505;font-family:'Courier New',Courier,monospace;font-size:14px;font-weight:bold;text-decoration:none;padding:12px 32px;border-radius:6px;">
+            Sign in to SkillsHub
+          </a>
+        </td></tr>
+        <tr><td style="border-top:1px solid #1a1a1a;padding-top:20px;font-size:11px;color:#525252;font-family:'Courier New',Courier,monospace;">
+          &gt; this link expires in 24 hours<br/>
+          &gt; sent to ${email}
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+        });
+      },
     }),
   ],
   callbacks: {
