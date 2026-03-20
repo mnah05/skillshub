@@ -143,7 +143,7 @@ export default function DocsPage() {
             threshold: "Minimum confidence to include, 0–1 (default: 0.3)",
           }}
           curl={`curl "${BASE_URL}/api/v1/skills/resolve?task=write+terraform+modules+with+tests"`}
-          note="Response includes: data (ranked skills with fetchUrl), tokenWeights, matched count, threshold used."
+          note="Response includes: data (ranked skills with fetchUrl), tokens, tokenWeights, matched, total, threshold, ambiguity. On no-match: noMatchReason, noMatchDetail, nearMiss."
         />
       </Section>
 
@@ -172,7 +172,10 @@ export default function DocsPage() {
           method="GET"
           url={`${BASE_URL}/api/v1/skills/trending`}
           description="Top skills by stars."
-          params={{ limit: "Number of results, 1–50 (default: 20)" }}
+          params={{
+            limit: "Number of results, 1–50 (default: 20)",
+            period: "day | week | month | all (default: week)",
+          }}
           curl={`curl "${BASE_URL}/api/v1/skills/trending"`}
         />
         <EndpointCard
