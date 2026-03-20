@@ -58,7 +58,7 @@ Agent 调用 /api/v1/skills/resolve?task=你的任务 → 直接获取最佳技�
 ### 第 0 步：阅读 API 指南
 
 ```bash
-curl "https://skillshub.wtf/api/"
+curl "https://skillshub.wtf/api/v1"
 ```
 
 返回完整的 JSON 指南，包含所有端点、参数、示例和错误码。从这里开始。
@@ -75,12 +75,17 @@ curl 'https://skillshub.wtf/api/v1/skills/resolve?task=set+up+playwright+e2e+tes
 ```json
 {
   "data": [{
-    "skill": { "name": "playwright-skill", "description": "..." },
-    "confidence": 0.88,
+    "skill": { "name": "playwright-skill", "slug": "playwright-skill", "description": "..." },
+    "score": 14.5,
+    "confidence": 0.92,
     "fetchUrl": "https://skillshub.wtf/lackeyjb/playwright-skill/playwright-skill?format=md"
   }],
+  "query": "set up playwright e2e tests for react",
   "tokens": ["playwright", "e2e", "tests", "react"],
-  "matched": 3
+  "tokenWeights": { "playwright": 4.2, "e2e": 3.1, "tests": 1.8, "react": 2.4 },
+  "matched": 1,
+  "threshold": 0.3,
+  "ambiguity": "none"
 }
 ```
 
@@ -222,20 +227,20 @@ GET /{owner}/{repo}/{skill}?format=md
 ```
 
 ```bash
-# 获取 openclaw 的 apple-reminders 技能
-curl "https://skillshub.wtf/openclaw/openclaw/apple-reminders?format=md"
+# 获取 anthropics 的 pdf 技能
+curl "https://skillshub.wtf/anthropics/skills/pdf?format=md"
 
 # 获取 anthropics 的 mcp-builder 技能
 curl "https://skillshub.wtf/anthropics/skills/mcp-builder?format=md"
 
-# 获取 coding-agent 技能
-curl "https://skillshub.wtf/openclaw/openclaw/coding-agent?format=md"
+# 获取 hashicorp 的 terraform-test 技能
+curl "https://skillshub.wtf/hashicorp/agent-skills/terraform-test?format=md"
 ```
 
 ### 通过 Accept 请求头（替代方式）
 
 ```bash
-curl -H "Accept: text/markdown" "https://skillshub.wtf/openclaw/openclaw/apple-reminders"
+curl -H "Accept: text/markdown" "https://skillshub.wtf/anthropics/skills/pdf"
 ```
 
 **响应：** `Content-Type: text/markdown; charset=utf-8`
@@ -257,15 +262,16 @@ curl -H "Accept: text/markdown" "https://skillshub.wtf/openclaw/openclaw/apple-r
 **可以直接获取的真实技能示例：**
 
 ```bash
-# OpenClaw 技能
-curl "https://skillshub.wtf/openclaw/openclaw/coding-agent?format=md"
-curl "https://skillshub.wtf/openclaw/openclaw/github?format=md"
-curl "https://skillshub.wtf/openclaw/openclaw/discord?format=md"
-
 # Anthropic 技能
-curl "https://skillshub.wtf/anthropics/skills/mcp-builder?format=md"
 curl "https://skillshub.wtf/anthropics/skills/pdf?format=md"
+curl "https://skillshub.wtf/anthropics/skills/mcp-builder?format=md"
 curl "https://skillshub.wtf/anthropics/skills/frontend-design?format=md"
+
+# Trail of Bits 技能
+curl "https://skillshub.wtf/trailofbits/skills/modern-python?format=md"
+
+# HashiCorp 技能
+curl "https://skillshub.wtf/hashicorp/agent-skills/terraform-test?format=md"
 
 # Vercel 技能
 curl "https://skillshub.wtf/vercel-labs/agent-skills/react-best-practices?format=md"

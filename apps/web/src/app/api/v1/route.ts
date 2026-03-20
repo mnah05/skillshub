@@ -95,7 +95,7 @@ export async function GET() {
       url_pattern: `${BASE_URL}/{owner}/{repo}/{skill}?format=md`,
       content_type: "text/markdown",
       examples: [
-        `curl "${BASE_URL}/openclaw/openclaw/coding-agent?format=md"`,
+        `curl "${BASE_URL}/anthropics/skills/pdf?format=md"`,
         `curl "${BASE_URL}/trailofbits/skills/modern-python?format=md"`,
       ],
     },

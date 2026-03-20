@@ -58,7 +58,7 @@ You are an AI agent. You need skills. Here's how to get them.
 ### Step 0: Read the API guide
 
 ```bash
-curl "https://skillshub.wtf/api/"
+curl "https://skillshub.wtf/api/v1"
 ```
 
 This returns a complete JSON guide with every endpoint, parameters, examples, and error codes. Start here.
@@ -75,12 +75,17 @@ Response:
 ```json
 {
   "data": [{
-    "skill": { "name": "playwright-skill", "description": "..." },
-    "confidence": 0.88,
+    "skill": { "name": "playwright-skill", "slug": "playwright-skill", "description": "..." },
+    "score": 14.5,
+    "confidence": 0.92,
     "fetchUrl": "https://skillshub.wtf/lackeyjb/playwright-skill/playwright-skill?format=md"
   }],
+  "query": "set up playwright e2e tests for react",
   "tokens": ["playwright", "e2e", "tests", "react"],
-  "matched": 3
+  "tokenWeights": { "playwright": 4.2, "e2e": 3.1, "tests": 1.8, "react": 2.4 },
+  "matched": 1,
+  "threshold": 0.3,
+  "ambiguity": "none"
 }
 ```
 
@@ -222,20 +227,20 @@ GET /{owner}/{repo}/{skill}?format=md
 ```
 
 ```bash
-# Get the apple-reminders skill from openclaw
-curl "https://skillshub.wtf/openclaw/openclaw/apple-reminders?format=md"
+# Get the pdf skill from anthropics
+curl "https://skillshub.wtf/anthropics/skills/pdf?format=md"
 
 # Get the mcp-builder skill from anthropics
 curl "https://skillshub.wtf/anthropics/skills/mcp-builder?format=md"
 
-# Get a coding-agent skill
-curl "https://skillshub.wtf/openclaw/openclaw/coding-agent?format=md"
+# Get a terraform-test skill from hashicorp
+curl "https://skillshub.wtf/hashicorp/agent-skills/terraform-test?format=md"
 ```
 
 ### By Accept header (alternative)
 
 ```bash
-curl -H "Accept: text/markdown" "https://skillshub.wtf/openclaw/openclaw/apple-reminders"
+curl -H "Accept: text/markdown" "https://skillshub.wtf/anthropics/skills/pdf"
 ```
 
 **Response:** `Content-Type: text/markdown; charset=utf-8`
@@ -257,15 +262,16 @@ Every skill has a URL: `/{owner}/{repo}/{skill}`
 **Examples of real skills you can fetch right now:**
 
 ```bash
-# OpenClaw skills
-curl "https://skillshub.wtf/openclaw/openclaw/coding-agent?format=md"
-curl "https://skillshub.wtf/openclaw/openclaw/github?format=md"
-curl "https://skillshub.wtf/openclaw/openclaw/discord?format=md"
-
 # Anthropic skills
-curl "https://skillshub.wtf/anthropics/skills/mcp-builder?format=md"
 curl "https://skillshub.wtf/anthropics/skills/pdf?format=md"
+curl "https://skillshub.wtf/anthropics/skills/mcp-builder?format=md"
 curl "https://skillshub.wtf/anthropics/skills/frontend-design?format=md"
+
+# Trail of Bits skills
+curl "https://skillshub.wtf/trailofbits/skills/modern-python?format=md"
+
+# HashiCorp skills
+curl "https://skillshub.wtf/hashicorp/agent-skills/terraform-test?format=md"
 
 # Vercel skills
 curl "https://skillshub.wtf/vercel-labs/agent-skills/react-best-practices?format=md"
