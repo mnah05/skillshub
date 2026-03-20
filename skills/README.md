@@ -51,5 +51,3 @@ After adding skills to this directory, run:
 ```bash
 cd packages/db && npx tsx src/seed-from-skills-dir.ts
 ```
-
-This imports all SKILL.md files from this directory into your local database.
