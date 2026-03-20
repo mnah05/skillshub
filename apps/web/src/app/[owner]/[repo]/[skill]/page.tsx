@@ -12,6 +12,7 @@ import { getUser } from "@/lib/session";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import matter from "gray-matter";
 import { getRepoStars } from "@/lib/ungh";
 import { JsonLd } from "@/components/json-ld";
 
@@ -235,7 +236,7 @@ export default async function SkillDetailPage({ params }: Props) {
                 <span className="font-mono text-xs text-neutral-600">{result.name}</span>
               </div>
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {result.readme}
+                {matter(result.readme).content}
               </ReactMarkdown>
             </div>
           )}
