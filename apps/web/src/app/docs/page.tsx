@@ -32,7 +32,7 @@ function ParamTable({ params }: { params: Record<string, string> }) {
     <div className="mt-3 rounded border border-neutral-800/60 overflow-hidden">
       {Object.entries(params).map(([key, desc], i) => (
         <div key={key} className={`flex gap-3 px-3 py-2 text-xs ${i % 2 === 0 ? "bg-neutral-900/40" : "bg-neutral-900/20"}`}>
-          <code className="font-mono text-neon-cyan/70 w-24 shrink-0">{key}</code>
+          <code className="font-mono text-neon-cyan/70 min-w-[140px] shrink-0">{key}</code>
           <span className="text-neutral-500">{desc}</span>
         </div>
       ))}
