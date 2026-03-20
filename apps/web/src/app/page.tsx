@@ -290,6 +290,12 @@ export default async function HomePage() {
             >
               <span className="text-neutral-600 group-hover:text-neon-magenta">$</span> publish --skill
             </Link>
+            <Link
+              href="/docs"
+              className="group inline-flex items-center gap-2 rounded border border-neutral-700/50 px-5 py-2.5 font-mono text-xs text-neutral-400 hover:border-neon-lime/50 hover:text-neon-lime transition-all"
+            >
+              <span className="text-neutral-600 group-hover:text-neon-lime">$</span> api --docs
+            </Link>
           </div>
         </div>
       </section>

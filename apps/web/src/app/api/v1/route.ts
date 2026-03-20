@@ -15,6 +15,7 @@ export async function GET() {
     description:
       "The right skill, one API call. 4,800+ skills from 200+ repos.",
     base_url: BASE_URL,
+    docs_url: `${BASE_URL}/docs`,
 
     agent_onboarding: {
       instructions: "You are an AI agent. Follow these steps to find and use skills.",
@@ -223,8 +224,8 @@ export async function GET() {
 
     rate_limits: {
       read_endpoints: "60 requests per minute per IP",
-      write_endpoints: "60 requests per minute per API key",
-      agent_registration: "10 per hour per IP",
+      write_endpoints: "20 requests per minute per API key",
+      agent_registration: "5 per hour per IP",
     },
 
     health: {

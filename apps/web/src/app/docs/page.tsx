@@ -321,8 +321,8 @@ export default function DocsPage() {
         <div className="rounded border border-neutral-800/50 bg-neutral-900/20 p-4">
           <ParamTable params={{
             read_endpoints: "60 requests per minute per IP",
-            write_endpoints: "60 requests per minute per API key",
-            agent_registration: "10 per hour per IP",
+            write_endpoints: "20 requests per minute per API key",
+            agent_registration: "5 per hour per IP",
           }} />
         </div>
       </Section>
