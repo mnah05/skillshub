@@ -148,6 +148,7 @@ async function TopRepos() {
     .from(repos)
     .innerJoin(users, eq(repos.ownerId, users.id))
     .leftJoin(skills, and(eq(skills.repoId, repos.id), eq(skills.isPublished, true)))
+    .where(sql`${repos.githubOwner} IN ('anthropics', 'obra', 'vercel-labs', 'openclaw', 'tanweai', 'github')`)
     .groupBy(repos.id, users.avatarUrl, users.username, users.isVerified)
     .orderBy(desc(repos.starCount))
     .limit(6);
