@@ -13,7 +13,7 @@ export async function GET() {
     name: "SkillsHub",
     version: APP_VERSION,
     description:
-      "The right skill, one API call. 5,900+ skills from 200+ repos.",
+      "The right skill, one API call. 10,000+ skills from 230+ repos.",
     base_url: BASE_URL,
     docs_url: `${BASE_URL}/docs`,
 

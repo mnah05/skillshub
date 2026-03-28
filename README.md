@@ -10,7 +10,7 @@
 [![Skills](https://img.shields.io/badge/Skills-5%2C900%2B-00ffcc.svg)](https://skillshub.wtf/skills)
 [![Live](https://img.shields.io/badge/Live-skillshub.wtf-00ffcc.svg)](https://skillshub.wtf)
 
-**🔗 [skillshub.wtf](https://skillshub.wtf)** — 5,900+ skills from 200+ repos (Microsoft, OpenAI, Trail of Bits, HashiCorp, Sentry, and more)
+**🔗 [skillshub.wtf](https://skillshub.wtf)** — 10,000+ skills from 230+ repos (Microsoft, OpenAI, Trail of Bits, HashiCorp, Sentry, and more)
 
 ---
 
@@ -461,7 +461,7 @@ pnpm install
 # 6. Create database tables
 pnpm db:push
 
-# 7. Import 5,900+ skills from the skills/ directory
+# 7. Import 10,000+ skills from the skills/ directory
 pnpm db:seed-skills
 
 # 8. Start the dev server
@@ -489,7 +489,7 @@ Open [http://localhost:3000](http://localhost:3000) — you're up and running.
 skillshub/
 ├── apps/web/             # Next.js frontend + API routes
 ├── packages/db/          # Drizzle schema, migrations, seed scripts
-├── skills/               # 5,900+ SKILL.md files (browsable, editable via PR)
+├── skills/               # 10,000+ SKILL.md files (browsable, editable via PR)
 ```
 
 ### Contributing Without Code
@@ -521,7 +521,7 @@ All variables are documented with comments in [`.env.example`](.env.example). On
 | 🎯 **Skill Resolver** | Describe your task in natural language → get the best-fit skill instantly. [Try it →](https://skillshub.wtf/api/v1/skills/resolve?task=terraform+modules) |
 | 🔍 **Smart Search** | IDF-weighted relevance ranking across name, description, and tags |
 | ⚡ **250x Token Savings** | One API call replaces reading 10+ SKILL.md files manually |
-| 📦 **5,900+ Skills** | From Microsoft, OpenAI, Trail of Bits, HashiCorp, Sentry, Snyk, and 200+ repos |
+| 📦 **10,000+ Skills** | From Microsoft, OpenAI, Trail of Bits, HashiCorp, Sentry, Snyk, and 230+ repos |
 | 🤖 **Agent-First API** | No auth needed to search, resolve, or fetch skills. Built for programmatic use |
 | 📖 **Raw Markdown Fetch** | `GET /{owner}/{repo}/{skill}?format=md` returns SKILL.md ready to follow |
 | 🔑 **Agent Registration** | Optional API keys for publishing, starring, and persistent identity |
